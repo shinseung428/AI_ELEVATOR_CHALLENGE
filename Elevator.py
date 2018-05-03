@@ -9,7 +9,7 @@ class Elevator(object):
 		#we don't need this right now since everyone's going down to the ground floor 
 		# self.dest_floors = []
 		self.curr_floor = 0
-		self.curr_people = 0
+		self.curr_people = []
 
 	def move_up(self):
 		if self.curr_floor < self.max_height-1:
@@ -26,12 +26,18 @@ class Elevator(object):
 
 	def load_people(self, people_in_floor):
 		res = 0
-		if people_in_floor > (self.max_people - self.curr_people):
-			res = (self.max_people - self.curr_people)
-			self.curr_people += (self.max_people - self.curr_people)
+		if len(people_in_floor) > (self.max_people - len(self.curr_people)):
+			res = people_in_floor[self.max_people - len(self.curr_people):]
+			# self.curr_people += (self.max_people - self.curr_people)
+			for p in people_in_floor[:self.max_people - len(self.curr_people)]:
+				self.curr_people.append(p)
+
 		else:
-			self.curr_people += people_in_floor
-			res = people_in_floor
+			for p in people_in_floor:
+				self.curr_people.append(p)
+			# self.curr_people += people_in_floor
+			res = []
+		
 		return res
 
 		# dest_floor = np.random.randint(floor+1,self.max_height) if button.up == "^" else np.random.randint(0,floor-1)		
@@ -39,7 +45,8 @@ class Elevator(object):
 		# 	self.dest_floors.append(dest_floor)
 		# sorted(self.dest_floors)
 
-	def unload_people(self):
+	def unload_people(self, people_in_floor):
 		res = self.curr_people
-		self.curr_people = 0
+		self.curr_people = []
+
 		return res

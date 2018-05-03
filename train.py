@@ -8,23 +8,22 @@ from Agent import Agent
 
 #====================================================================================
 
-lift_num = 4
+lift_num = 1
 buliding_height = 10
 #Create building with 2 elevators, and height 10
 building = Building(lift_num, buliding_height)
-building.generate_people()
+# building.generate_people()
 
 agent = Agent(buliding_height, lift_num, 5)
 
 #The goal is to bring down all the people in the building to the ground floor
-
-
 batch_size = 64
 epochs = 50
 max_steps = 1000
-
+global_step = 0
 
 for epoch in range(epochs):
+	building.generate_people()
 	for step in range(max_steps):
 		states = []
 		actions = []
@@ -32,23 +31,28 @@ for epoch in range(epochs):
 		ave_reward = 0
 		for batch_idx in range(batch_size):
 
-			# os.system('clear')
+			os.system('clear')
 			state = building.get_state()
-			state = np.array(state).reshape(1,-1)
-			action = agent.get_action(state)
-			
+			state_input = np.array(state).reshape(1,-1)
+			action = agent.get_action(state_input)
 			building.perform_action(action)
-			# building.print_building(step)
 			reward = building.get_reward()
 			
-			step += 1
+			
 			states.append(state)
 			actions.append(action)
 			rewards.append(reward)
+			
 			ave_reward += reward
+			building.increment_wait_time()
+			building.print_building(step)
 			# raw_input("enter:")
 
 
 		#update network here 
 		agent.update_network(states, actions, rewards, step)
-		print "Epoch: %d Step: %d Reward: %.4f"%(epoch, step, ave_reward/batch_size)
+		print "Epoch: %d Step: %d Average Reward: %.4f"%(epoch, step, ave_reward/batch_size)
+		global_step += 1
+	agent.save(global_step)
+
+		# raw_input("enter:")

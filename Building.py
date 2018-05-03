@@ -26,17 +26,32 @@ class Building(object):
 		self.people_in_floors = []
 		self.floor_button = []
 		for idx in range(height):
-			self.people_in_floors.append(0)
+			self.people_in_floors.append([])
 			self.floor_button.append(Switch())
 
 	def get_reward(self):
-		return self.people_in_floors[0]
+		return self.get_arrived_people()
+		
+	def get_arrived_people(self):
+		return len(self.people_in_floors[0])
+
+	def get_wait_time(self):
+		total = 0
+		for people in self.people_in_floors[1:]:
+			for p in people:
+				total += p.wait_time
+
+		for elevator in self.elevators:
+			for p in elevator.curr_people:
+				total += p.wait_time
+		return total
 
 	def get_state(self):
-		res = [elem for elem in self.people_in_floors]
+		res = [len(elem) for elem in self.people_in_floors]
+
 		for e in self.elevators:
 			res.append(e.curr_floor)
-			res.append(e.curr_people)
+			res.append(len(e.curr_people))
 
 		return res
 
@@ -44,8 +59,12 @@ class Building(object):
 		#generate random people in building and button press in each floor
 		for floor_num in range(1, self.height):
 			if np.random.random() < 0.8:
-				people = np.random.randint(1,3)
-				self.people_in_floors[floor_num] += people
+				people = np.random.randint(1,5)
+				# self.people_in_floors[floor_num] += people
+				tmp_list = []
+				for p in range(people):
+					tmp_list.append(Passenger())
+				self.people_in_floors[floor_num] = tmp_list
 				self.target += people
 
  				# if np.random.random() < 0.5 and floor_num < self.height:
@@ -57,14 +76,26 @@ class Building(object):
 	def perform_action(self, action):
 		for idx,e in enumerate(self.elevators):
 			if action[idx] == 4:
-				self.people_in_floors[e.curr_floor] += e.unload_people()
+				res = e.unload_people(self.people_in_floors[e.curr_floor])
+				for p in res:
+					self.people_in_floors[e.curr_floor].append(p)
 			elif action[idx] == 3:
-				self.people_in_floors[e.curr_floor] -= e.load_people(self.people_in_floors[e.curr_floor])
+				self.people_in_floors[e.curr_floor] = e.load_people(self.people_in_floors[e.curr_floor])
 			elif action[idx] == 2:
 				e.move_up()
 			elif action[idx] == 1:
 				e.move_down()		
 
+	
+
+	def increment_wait_time(self):
+		for people in self.people_in_floors[1:]:
+			for p in people:
+				p.wait_time+=1
+
+		for elevator in self.elevators:
+			for p in elevator.curr_people:
+				p.wait_time+=1
 
 	def print_building(self, step):
 		for idx in reversed(range(1,self.height)):
@@ -81,11 +112,11 @@ class Building(object):
 			print "=  Waiting  =",
 			for e in self.elevators:
 				if e.curr_floor == idx:
-					print "    %02d   "%e.curr_people,
+					print "    %02d   "%len(e.curr_people),
 				else:
 					print "          ",
 			print " "
-			print "=    %03d    ="%self.people_in_floors[idx]
+			print "=    %03d    ="%len(self.people_in_floors[idx])
 
 
 		print "======================================================="
@@ -101,13 +132,13 @@ class Building(object):
 		print "=  Arrived  =",
 		for e in self.elevators:
 			if e.curr_floor == 0:
-				print "    %02d   "%e.curr_people,
+				print "    %02d   "%len(e.curr_people),
 			else:
 				print "          ",		
 		print " "
-		print "=    %03d    ="%self.people_in_floors[0]				
+		print "=    %03d    ="%len(self.people_in_floors[0])
 		print "======================================================="
 		print ""
-		print "People to move: %d "%(self.target - self.people_in_floors[0])
+		print "People to move: %d "%(self.target - len(self.people_in_floors[0]))
 		print "Total # of people: %d"%self.target
 		print "Step: %d"%step

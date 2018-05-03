@@ -1,4 +1,4 @@
-
+import os
 import numpy as np
 import tensorflow as tf
 
@@ -18,8 +18,13 @@ class Agent():
 		self.learning_rate = 0.001
 		self.momentum = 0.9
 
-		self.graphpath = "./graphs"
-		self.modelpath = "./models"
+		self.graphpath = "./graphs/"
+		self.modelpath = "./models/"
+
+		if not os.path.exists(self.graphpath):
+			os.mkdir(self.graphpath)
+		if not os.path.exists(self.modelpath):
+			os.mkdir(self.modelpath)
 
 		self.build_model()
 		self.build_loss()
@@ -41,10 +46,10 @@ class Agent():
 		return actions
 
 	def update_network(self, states, actions, advantages, counter):
+		advantages = np.array(advantages).reshape(-1,1)
 		batch_feed = {self.input_state: states,
 					  self.input_act: actions,
 					  self.input_adv: advantages}
-
 		loss, summary, _ = self.sess.run([self.loss, self.summary, self.trainer], feed_dict=batch_feed)
 		self.writer.add_summary(summary, counter)
 
@@ -123,7 +128,7 @@ class Agent():
 			return fc4, output
 
 	def save(self, num):
-		save_path = self.saver.save(self.sess, self.modelpath + "slingshotmodel", global_step=num)
+		save_path = self.saver.save(self.sess, self.modelpath + "elevator_model", global_step=num)
 
 	def reload(self):
 		latest_chkpt_path = tf.train.latest_checkpoint(self.modelpath)
