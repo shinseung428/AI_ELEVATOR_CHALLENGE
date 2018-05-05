@@ -15,7 +15,7 @@ class Agent():
 		self.input_shape = [None, building_height+2*elevator_nums]
 		self.action_num = self.elevator_nums*actions#self.elevator_nums*self.actions
 		
-		self.learning_rate = 0.001
+		self.learning_rate = 0.0001
 		self.momentum = 0.9
 
 		self.graphpath = "./graphs/"
@@ -42,7 +42,6 @@ class Agent():
 		actions = []
 		for idx in range(self.elevator_nums):
 			actions.append(np.random.choice(self.actions, p=output[0][idx]))
-
 		return actions
 
 	def update_network(self, states, actions, advantages, counter):

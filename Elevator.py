@@ -31,7 +31,6 @@ class Elevator(object):
 			# self.curr_people += (self.max_people - self.curr_people)
 			for p in people_in_floor[:self.max_people - len(self.curr_people)]:
 				self.curr_people.append(p)
-
 		else:
 			for p in people_in_floor:
 				self.curr_people.append(p)
@@ -45,8 +44,28 @@ class Elevator(object):
 		# 	self.dest_floors.append(dest_floor)
 		# sorted(self.dest_floors)
 
-	def unload_people(self, people_in_floor):
+	def unload_people(self, people_in_floor, max_capacity):
+		num_in_floor = len(people_in_floor)
+		num_in_lift = len(self.curr_people)
 		res = self.curr_people
-		self.curr_people = []
+		if self.curr_floor == 0 or num_in_floor + num_in_lift < max_capacity:
+			self.curr_people = []
+		else:
+			self.curr_people = res[0:num_in_floor + num_in_lift - max_capacity]
+			res = res[num_in_floor + num_in_lift - max_capacity:]
 
 		return res
+
+
+
+
+
+
+
+
+
+
+
+
+
+

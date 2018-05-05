@@ -9,35 +9,40 @@ from Agent import Agent
 #====================================================================================
 
 lift_num = 1
-buliding_height = 10
-#Create building with 2 elevators, and height 10
-building = Building(lift_num, buliding_height)
+buliding_height = 5
+max_people_in_floor = 30
+#Create building with 2 elevators, height 10, max people 30
+building = Building(lift_num, buliding_height, max_people_in_floor)
 # building.generate_people()
 
-agent = Agent(buliding_height, lift_num, 5)
+agent = Agent(buliding_height, lift_num, 4)
 
 #The goal is to bring down all the people in the building to the ground floor
 batch_size = 64
 epochs = 50
-max_steps = 1000
+max_steps = 500
 global_step = 0
 
 for epoch in range(epochs):
-	building.generate_people()
+	#generate poeple with 80% probability in each floor
+	building.empty_building()
+	building.generate_people(0.8)
 	for step in range(max_steps):
 		states = []
 		actions = []
 		rewards = []
 		ave_reward = 0
+		if step % 100 == 0:
+			building.generate_people(0.8)
+
 		for batch_idx in range(batch_size):
 
-			os.system('clear')
+			# os.system('clear')
 			state = building.get_state()
 			state_input = np.array(state).reshape(1,-1)
 			action = agent.get_action(state_input)
 			building.perform_action(action)
 			reward = building.get_reward()
-			
 			
 			states.append(state)
 			actions.append(action)
@@ -45,7 +50,7 @@ for epoch in range(epochs):
 			
 			ave_reward += reward
 			building.increment_wait_time()
-			building.print_building(step)
+			# building.print_building(step)
 			# raw_input("enter:")
 
 
