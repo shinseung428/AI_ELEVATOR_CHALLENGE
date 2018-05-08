@@ -30,10 +30,8 @@ class Building(object):
 			self.people_in_floors.append([])
 			self.floor_button.append(Switch())
 
-	def get_reward(self):
-		res = self.get_arrived_people()
-		# if res == 0:
-		# 	res = -1
+	def get_reward(self, prev_people):
+		res = self.get_arrived_people() - prev_people
 		return res
 		
 	def get_arrived_people(self):
@@ -51,16 +49,21 @@ class Building(object):
 		return total
 
 	def get_state(self):
-		res = [len(elem)/self.max_people_in_floor for elem in self.people_in_floors]
+		res = [float(len(elem))/float(self.max_people_in_floor) if idx > 0 else float(len(elem))/float(self.target) for idx, elem in enumerate(self.people_in_floors)]
+
 		for e in self.elevators:
-			res.append(e.curr_floor/self.height)
-			res.append(len(e.curr_people)/e.max_people)
+			res.append(float(e.curr_floor)/float(self.height))
+			res.append(float(len(e.curr_people))/float(e.max_people))
 		return res
 
 	def empty_building(self):
 		self.people_in_floors = []
 		for idx in range(self.height):
 			self.people_in_floors.append([])
+
+		for e in self.elevators:
+			e.empty()
+		self.target = 0
 
 	def generate_people(self, prob):
 		#generate random people in building and button press in each floor
@@ -84,14 +87,18 @@ class Building(object):
 	def perform_action(self, action):
 		for idx,e in enumerate(self.elevators):
 			if action[idx] == 3:
+				# print "unload"
 				res = e.unload_people(self.people_in_floors[e.curr_floor], self.max_people_in_floor)
 				for p in res:
 					self.people_in_floors[e.curr_floor].append(p)
 			elif action[idx] == 2:
+				# print "load"
 				self.people_in_floors[e.curr_floor] = e.load_people(self.people_in_floors[e.curr_floor])
 			elif action[idx] == 1:
+				# print "up"
 				e.move_up()
 			elif action[idx] == 0:
+				# print "down"
 				e.move_down()
 
 	def increment_wait_time(self):

@@ -23,12 +23,14 @@ class Elevator(object):
 	# 	if dest_floor > 0 and dest_floor < max_height:
 	# 		self.dest_floors.append(dest_floor)
 
+	def empty(self):
+		self.curr_people = []
+		self.curr_floor = 0
 
 	def load_people(self, people_in_floor):
 		res = 0
 		if len(people_in_floor) > (self.max_people - len(self.curr_people)):
 			res = people_in_floor[self.max_people - len(self.curr_people):]
-			# self.curr_people += (self.max_people - self.curr_people)
 			for p in people_in_floor[:self.max_people - len(self.curr_people)]:
 				self.curr_people.append(p)
 		else:

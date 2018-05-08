@@ -36,13 +36,13 @@ for epoch in range(epochs):
 			building.generate_people(0.8)
 
 		for batch_idx in range(batch_size):
-
-			# os.system('clear')
+			os.system('clear')
 			state = building.get_state()
+			prev_people = building.get_arrived_people()
 			state_input = np.array(state).reshape(1,-1)
 			action = agent.get_action(state_input)
 			building.perform_action(action)
-			reward = building.get_reward()
+			reward = building.get_reward(prev_people)
 			
 			states.append(state)
 			actions.append(action)
@@ -50,13 +50,16 @@ for epoch in range(epochs):
 			
 			ave_reward += reward
 			building.increment_wait_time()
-			# building.print_building(step)
+			building.print_building(step)
 			# raw_input("enter:")
 
+			if building.get_arrived_people() == building.target:
+				building.generate_people(0.8)
 
+			print "Epoch: %d Step: %d Average Reward: %.4f"%(epoch, step, ave_reward/batch_size)
 		#update network here 
 		agent.update_network(states, actions, rewards, step)
-		print "Epoch: %d Step: %d Average Reward: %.4f"%(epoch, step, ave_reward/batch_size)
+		# print "Epoch: %d Step: %d Average Reward: %.4f"%(epoch, step, ave_reward/batch_size)
 		global_step += 1
 	agent.save(global_step)
 

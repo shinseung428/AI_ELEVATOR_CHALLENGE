@@ -30,7 +30,7 @@ for step in range(max_steps):
 	state_input = np.array(state).reshape(1,-1)
 	action = agent.get_action(state_input)
 	building.perform_action(action)
-	reward = building.get_reward()	
+	
 	
 	building.increment_wait_time()
 	building.print_building(step)
