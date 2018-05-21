@@ -8,9 +8,9 @@ Mission is to move all the people in the building to the ground floor.
 Create an agent that learns to control the elevators in the building.  
 
 ### Current Environment
-The height and maximum capacity of the building can be set by the user.  
-The building randomly adds people into the builing after 25 steps.  
-The agent chooses all the actions of the elevators in the building.  
+* The height and maximum capacity of the building can be set by the user.  
+* The building randomly adds people into the builing after 25 steps.  
+* The agent chooses all the actions of the elevators in the building.  
 
 ### Training
 ```
