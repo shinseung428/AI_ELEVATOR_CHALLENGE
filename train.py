@@ -12,6 +12,9 @@ lift_num = 4
 buliding_height = 10
 max_people_in_floor = 30
 
+add_people_at_step = 25
+add_people_prob = 0.8
+
 #Create building with 4 elevators, height 10, max people 30 in each floor
 building = Building(lift_num, buliding_height, max_people_in_floor)
 
@@ -27,14 +30,14 @@ global_step = 0
 for epoch in range(epochs):
 	#generate poeple with 80% probability in each floor
 	building.empty_building()
-	building.generate_people(0.8)
+	building.generate_people(add_people_prob)
 	for step in range(max_steps):
 		states = []
 		actions = []
 		rewards = []
 		ave_reward = 0
-		if step % 25 == 0:
-			building.generate_people(0.8)
+		if step % add_people_at_step == 0:
+			building.generate_people(add_people_prob)
 
 		for batch_idx in range(batch_size):
 			os.system('clear')
@@ -52,10 +55,11 @@ for epoch in range(epochs):
 			ave_reward += reward
 			building.increment_wait_time()
 			building.print_building(step)
-			raw_input("")
+			# raw_input("")
 
+			# add more people if everyone in the building are moved to the ground floor
 			if building.get_arrived_people() == building.target:
-				building.generate_people(0.8)
+				building.generate_people(add_people_prob)
 
 			print "Epoch: %d Step: %d Average Reward: %.4f"%(epoch, step, ave_reward/batch_size)
 		#update network here 
