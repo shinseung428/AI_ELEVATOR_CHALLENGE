@@ -27,6 +27,8 @@ class Elevator(object):
 		self.curr_people = []
 		self.curr_floor = 0
 
+
+	# function loads people into the elevator
 	def load_people(self, people_in_floor):
 		res = 0
 		if len(people_in_floor) > (self.max_people - len(self.curr_people)):
@@ -46,6 +48,7 @@ class Elevator(object):
 		# 	self.dest_floors.append(dest_floor)
 		# sorted(self.dest_floors)
 
+	# function unloads people back into the building 
 	def unload_people(self, people_in_floor, max_capacity):
 		num_in_floor = len(people_in_floor)
 		num_in_lift = len(self.curr_people)

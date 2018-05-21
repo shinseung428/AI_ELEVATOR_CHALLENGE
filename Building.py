@@ -11,6 +11,7 @@ class Switch(object):
 		self.up = " "
 		self.down = " "
 
+# Building Class
 class Building(object):
 	def __init__(self, total_elevator_num, height, max_people):
 		self.target = 0
@@ -31,12 +32,14 @@ class Building(object):
 			self.floor_button.append(Switch())
 
 	def get_reward(self, prev_people):
-		res = self.get_arrived_people() - prev_people
+		res = self.get_arrived_people() - prev_people# - 1
 		return res
-		
+	
+	# check number of people in ground floor
 	def get_arrived_people(self):
 		return len(self.people_in_floors[0])
 
+	# this function is not currently used
 	def get_wait_time(self):
 		total = 0
 		for people in self.people_in_floors[1:]:
@@ -48,6 +51,8 @@ class Building(object):
 				total += p.wait_time
 		return total
 
+
+	# state of the building will be fed into the network as an input
 	def get_state(self):
 		res = [float(len(elem))/float(self.max_people_in_floor) if idx > 0 else float(len(elem))/float(self.target) for idx, elem in enumerate(self.people_in_floors)]
 
@@ -56,6 +61,7 @@ class Building(object):
 			res.append(float(len(e.curr_people))/float(e.max_people))
 		return res
 
+	# clears the building 
 	def empty_building(self):
 		self.people_in_floors = []
 		for idx in range(self.height):
@@ -84,6 +90,8 @@ class Building(object):
 				# elif floor_num > 0:
 				# 	self.floor_button[floor_num].down = "v"
 		
+
+	# actions can be redefined
 	def perform_action(self, action):
 		for idx,e in enumerate(self.elevators):
 			if action[idx] == 3:

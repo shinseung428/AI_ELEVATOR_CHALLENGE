@@ -1,5 +1,5 @@
 
-
+#Passenger Class
 class Passenger(object):
 	def __init__(self):
 		self.wait_time = 0

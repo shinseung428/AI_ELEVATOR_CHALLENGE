@@ -1,3 +1,4 @@
 graphs/
 models/
 *.pyc
+*backup
